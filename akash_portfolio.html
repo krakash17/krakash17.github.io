@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akash — Senior Scala Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00ff41;
+    --green-dim: #00b32c;
+    --green-muted: #003b0f;
+    --cyan: #00d4ff;
+    --cyan-dim: #0099bb;
+    --bg: #060a06;
+    --bg2: #0d120d;
+    --bg3: #111811;
+    --surface: #0f160f;
+    --border: #1a2b1a;
+    --border-bright: #00ff4133;
+    --text: #c8d8c8;
+    --text-dim: #5a7a5a;
+    --text-muted: #2a3d2a;
+    --red: #ff2244;
+    --amber: #ffaa00;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,255,65,0.012) 2px,
+      rgba(0,255,65,0.012) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .green { color: var(--green); }
+  .cyan { color: var(--cyan); }
+  .dim { color: var(--text-dim); }
+  .red { color: var(--red); }
+  .amber { color: var(--amber); }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2.5rem;
+    height: 56px;
+    background: rgba(6,10,6,0.92);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--green);
+    letter-spacing: 0.08em;
+  }
+
+  .nav-logo span { color: var(--text-dim); }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+
+  nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  nav a:hover { color: var(--green); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 2.5rem;
+    padding-top: 56px;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero-prompt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hero-prompt::before {
+    content: '>';
+    color: var(--green);
+    animation: blink 1.1s step-end infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hero-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    text-shadow: 0 0 40px rgba(0,255,65,0.15);
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 3px solid var(--green);
+    animation: typewriter 1.6s steps(5, end) forwards, cursorBlink 0.8s step-end 1.6s infinite;
+    width: 0;
+  }
+
+  @keyframes typewriter { to { width: 100%; } }
+  @keyframes cursorBlink { 50% { border-color: transparent; } }
+
+  .hero-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    color: var(--cyan);
+    margin-top: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 1.8s forwards;
+  }
+
+  .hero-bio {
+    margin-top: 1.5rem;
+    max-width: 560px;
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 2.1s forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-actions {
+    margin-top: 2.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 2.4s forwards;
+  }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    padding: 0.65rem 1.4rem;
+    border: 1px solid;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+  }
+
+  .btn-primary {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .btn-primary:hover {
+    background: var(--green);
+    color: var(--bg);
+  }
+
+  .btn-secondary {
+    border-color: var(--border);
+    color: var(--text-dim);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 6rem 2.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 120px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 3rem;
+  }
+
+  /* SKILLS */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1px;
+    border: 1px solid var(--border);
+  }
+
+  .skill-card {
+    padding: 1.5rem;
+    background: var(--surface);
+    border: none;
+    transition: background 0.2s;
+  }
+
+  .skill-card:hover { background: var(--bg3); }
+
+  .skill-card-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-dim);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .skill-card-title::before {
+    content: '#';
+    color: var(--text-muted);
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    transition: all 0.2s;
+  }
+
+  .tag:hover {
+    border-color: var(--green);
+    color: var(--green);
+    cursor: default;
+  }
+
+  .tag.hot {
+    border-color: var(--cyan-dim);
+    color: var(--cyan);
+  }
+
+  /* EXPERIENCE */
+  .timeline { position: relative; }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .timeline-item {
+    padding-left: 2rem;
+    padding-bottom: 3rem;
+    position: relative;
+  }
+
+  .timeline-item:last-child { padding-bottom: 0; }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -3px;
+    top: 6px;
+    width: 7px;
+    height: 7px;
+    border: 1px solid var(--green);
+    background: var(--bg);
+  }
+
+  .timeline-item:first-child::before {
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+  }
+
+  .timeline-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.3rem;
+  }
+
+  .timeline-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+
+  .timeline-company {
+    font-size: 13px;
+    color: var(--cyan);
+    margin-bottom: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .timeline-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .timeline-list li {
+    font-size: 14px;
+    color: var(--text-dim);
+    padding-left: 1.2rem;
+    position: relative;
+  }
+
+  .timeline-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--green-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .project-card {
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .project-card:hover {
+    border-color: var(--green-dim);
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--green-muted);
+    transition: background 0.2s;
+  }
+
+  .project-card:hover::before { background: var(--green); }
+
+  .project-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .project-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .project-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .project-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 0.15rem 0.5rem;
+    background: var(--green-muted);
+    color: var(--green-dim);
+    border: 1px solid transparent;
+  }
+
+  /* CONTACT */
+  .contact-box {
+    border: 1px solid var(--border);
+    padding: 3rem;
+    background: var(--surface);
+    text-align: center;
+    position: relative;
+  }
+
+  .contact-box::before {
+    content: 'OPEN_FOR_WORK=true';
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg);
+    padding: 0 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 0.1em;
+  }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .contact-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.2s;
+  }
+
+  .contact-link:hover { color: var(--green); }
+  .contact-link::before { content: '//'; color: var(--text-muted); }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    border-top: 1px solid var(--border);
+  }
+
+  footer span { color: var(--green-dim); }
+
+  /* METRIC ROW */
+  .metrics {
+    display: flex;
+    gap: 3rem;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 2.7s forwards;
+  }
+
+  .metric-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+  }
+
+  .metric-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.25rem;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo mono">&gt; akash<span>.dev</span></div>
+  <ul>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#experience">exp</a></li>
+    <li><a href="#projects">projects</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div style="max-width:900px;margin:0 auto;width:100%">
+  <div class="hero">
+    <div class="hero-prompt">initializing profile...</div>
+    <h1 class="hero-name mono">AKASH</h1>
+    <p class="hero-title">Senior Scala Developer &nbsp;/&nbsp; Fintech Backend Engineer</p>
+    <p class="hero-bio">
+      Building distributed, fault-tolerant systems for fraud detection and real-time rule engines in the banking domain. 3+ years deep in Scala, Kafka, Cassandra, Redis — shipping features that process millions of transactions for banks across India.
+    </p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn btn-primary">./get_in_touch</a>
+      <a href="#projects" class="btn btn-secondary">ls projects/</a>
+    </div>
+    <div class="metrics">
+      <div>
+        <div class="metric-val">5+</div>
+        <div class="metric-label">Bank Clients</div>
+      </div>
+      <div>
+        <div class="metric-val">3+</div>
+        <div class="metric-label">Years Experience</div>
+      </div>
+      <div>
+        <div class="metric-val">∞</div>
+        <div class="metric-label">Kafka Messages</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">01 &nbsp; tech stack</div>
+  <h2 class="section-title">What I work with</h2>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="skill-card-title">Languages</div>
+      <div class="skill-tags">
+        <span class="tag hot">Scala</span>
+        <span class="tag">SQL</span>
+        <span class="tag">Python</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">Bash</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-title">Databases</div>
+      <div class="skill-tags">
+        <span class="tag hot">Apache Cassandra</span>
+        <span class="tag hot">Redis</span>
+        <span class="tag">Oracle</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">PostGIS</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-title">Messaging & Infra</div>
+      <div class="skill-tags">
+        <span class="tag hot">Apache Kafka</span>
+        <span class="tag hot">Kubernetes</span>
+        <span class="tag">Docker</span>
+        <span class="tag">Linux</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-title">Domains</div>
+      <div class="skill-tags">
+        <span class="tag hot">Fraud Detection</span>
+        <span class="tag">Rule Engines</span>
+        <span class="tag">NRT Processing</span>
+        <span class="tag">DSL Design</span>
+        <span class="tag">Geolocation</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label">02 &nbsp; experience</div>
+  <h2 class="section-title">Where I've shipped</h2>
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <div class="timeline-date">2022 — PRESENT</div>
+      <div class="timeline-role">Senior Scala Developer</div>
+      <div class="timeline-company">IFRM — Fraud Detection & Rule Engine Platform</div>
+      <ul class="timeline-list">
+        <li>Architected UDS pipeline partitioning — improved throughput and fault isolation across multi-bank deployments (Pulse, RBL, Jana, DNS Bank, Bandhan)</li>
+        <li>Optimized Redis data structures — reduced latency on hot-path fraud checks</li>
+        <li>Led Oracle to PostgreSQL migration including CQL schema redesign for Cassandra</li>
+        <li>Integrated PostGIS geolocation into the fraud rule engine for location-aware transaction scoring</li>
+        <li>Built AI Rule Builder — a natural language interface for non-technical compliance teams to author fraud rules</li>
+        <li>Maintained and extended the DSL function library powering real-time and NRT rule evaluation</li>
+      </ul>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-date">2021 — 2022</div>
+      <div class="timeline-role">Scala Backend Developer</div>
+      <div class="timeline-company">Early fintech role — distributed backend systems</div>
+      <ul class="timeline-list">
+        <li>Built and maintained REST APIs for transaction processing pipelines</li>
+        <li>Worked with Kafka consumers and producer error-handling patterns</li>
+        <li>Contributed to Cassandra schema design and CQL query optimization</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">03 &nbsp; projects</div>
+  <h2 class="section-title">Things I've built</h2>
+  <div class="projects-grid">
+
+    <div class="project-card">
+      <div class="project-name">IFRM — Rule Engine Core</div>
+      <div class="project-desc">Multi-tenant fraud detection system serving 5+ banks. Real-time and NRT rule evaluation with custom DSL, Redis-backed state, and Cassandra event storage.</div>
+      <div class="project-stack">
+        <span class="project-tag">Scala</span>
+        <span class="project-tag">Kafka</span>
+        <span class="project-tag">Cassandra</span>
+        <span class="project-tag">Redis</span>
+        <span class="project-tag">K8s</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-name">AI Rule Builder</div>
+      <div class="project-desc">Natural language interface for compliance teams to author fraud detection rules without writing code. Translates plain-English logic into DSL expressions.</div>
+      <div class="project-stack">
+        <span class="project-tag">Scala</span>
+        <span class="project-tag">LLM</span>
+        <span class="project-tag">DSL</span>
+        <span class="project-tag">REST API</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-name">StockFlow</div>
+      <div class="project-desc">Full-stack inventory and order management system. Built as a portfolio project with Docker-compose deployment and a clean React + FastAPI architecture.</div>
+      <div class="project-stack">
+        <span class="project-tag">FastAPI</span>
+        <span class="project-tag">React</span>
+        <span class="project-tag">PostgreSQL</span>
+        <span class="project-tag">Docker</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-name">Geo Fraud Scoring</div>
+      <div class="project-desc">Location-aware transaction scoring using PostGIS and Redis GEORADIUS. Processes large coordinate datasets to flag anomalous merchant distances in real time.</div>
+      <div class="project-stack">
+        <span class="project-tag">PostGIS</span>
+        <span class="project-tag">Redis</span>
+        <span class="project-tag">Scala</span>
+        <span class="project-tag">Kafka</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">04 &nbsp; contact</div>
+  <h2 class="section-title">Get in touch</h2>
+  <div class="contact-box">
+    <p style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--text);">Available for backend & fintech engineering roles</p>
+    <p style="margin-top:0.75rem;font-size:14px;color:var(--text-dim);">Based in Meerut, India &nbsp;·&nbsp; Open to remote &amp; hybrid opportunities</p>
+    <div class="contact-links">
+      <a href="https://linkedin.com/in/akash" class="contact-link" target="_blank">LinkedIn</a>
+      <a href="https://github.com/akash" class="contact-link" target="_blank">GitHub</a>
+      <a href="mailto:akash@email.com" class="contact-link">Email</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>akash</span>.dev &nbsp;·&nbsp; built with vim &amp; caffeine &nbsp;·&nbsp; <span>2025</span>
+</footer>
+
+</body>
+</html>
